@@ -24,7 +24,16 @@ interface BookWithId {
 }
 
 listRouter.get('/books', async (ctx) => {
-  const filters = ctx.query.filters as Filter[] | undefined;
+  let filters = ctx.query.filters as Filter[] | undefined;
+
+  // Convert string numbers to actual numbers from query params
+  if (filters && Array.isArray(filters)) {
+    filters = filters.map(filter => ({
+      ...filter,
+      from: filter.from !== undefined ? Number(filter.from) : undefined,
+      to: filter.to !== undefined ? Number(filter.to) : undefined
+    }));
+  }
 
   try {
     let bookList: BookWithId[];
